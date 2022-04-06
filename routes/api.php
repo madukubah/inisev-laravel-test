@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/user', function (Request $request) {
-    return ["tes"];
-});
+// Route::get('/user', function (Request $request) {
+//     return ["tes"];
+// });
+
+// Route::get('/user', 'App\Http\Controllers\API\UserController@index');
+Route::resource('/user', 'App\Http\Controllers\API\UserController');
+Route::resource('/website', 'App\Http\Controllers\API\WebsiteController');
+Route::resource('/post', 'App\Http\Controllers\API\PostController');
+
+Route::get('/subscription', 'App\Http\Controllers\API\SubscriptionController@index');
+Route::post('/subscribe', 'App\Http\Controllers\API\SubscriptionController@subscribe');
+Route::delete("/unsubscribe/{subscription_id}", "App\Http\Controllers\API\SubscriptionController@unsubscribe" );
