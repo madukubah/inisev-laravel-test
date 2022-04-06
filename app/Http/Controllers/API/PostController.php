@@ -4,8 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Post;
+use App\Models\UserSubscription;
+use App\Models\Website;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Validator;
+use App\Jobs\SendEmailJob;
 
 class PostController extends BaseController
 {
@@ -42,9 +46,29 @@ class PostController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());       
         }
 
+        $website = Website::find($input['website_id']);
+        if (is_null($website)) {
+            return $this->sendError('website not found.');
+        }
+
         $post = Post::create($input);
 
-        return $this->sendResponse($post, 'post created successfully.');
+        $userSubscriptions = UserSubscription::where('website_id', '=', $input['website_id'])->get();
+        foreach($userSubscriptions as $userSubscription){
+
+            $user = User::where('id', '=', $userSubscription->user_id)->first();
+            if (is_null($user)) continue;
+
+            $send_mail = $user->email;
+            $data = [
+                'title' => $input['title'],
+                'description' => $input['description']
+            ];
+  
+            dispatch(new SendEmailJob($send_mail, $data));
+        }
+
+        return $this->sendResponse($userSubscriptions, 'post created successfully.');
     }
 
     /**

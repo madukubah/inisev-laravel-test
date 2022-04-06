@@ -26,3 +26,12 @@ Route::resource('/post', 'App\Http\Controllers\API\PostController');
 Route::get('/subscription', 'App\Http\Controllers\API\SubscriptionController@index');
 Route::post('/subscribe', 'App\Http\Controllers\API\SubscriptionController@subscribe');
 Route::delete("/unsubscribe/{subscription_id}", "App\Http\Controllers\API\SubscriptionController@unsubscribe" );
+
+Route::get('test/email', function(){
+  
+	$send_mail = 'Alfalah.Madukubah@hashmicro.com';
+  
+    dispatch(new App\Jobs\SendEmailJob($send_mail));
+  
+    dd('send mail successfully !!');
+});
